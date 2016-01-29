@@ -3,7 +3,6 @@ package abnf
 import (
 	"bytes"
 	"io"
-	// "unicode/utf8"
 )
 
 // length of mark pointer stack
