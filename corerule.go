@@ -101,7 +101,7 @@ func ALPHANUM() Rule {
 
 // EOF = [EOF]
 func EOF() Rule {
-	return func(s *Scanner) []rune {
+	return func(s *scanner) []rune {
 		if s.next() == nil {
 			return make([]rune, 0)
 		}
