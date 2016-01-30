@@ -5,14 +5,7 @@ import (
 	"io"
 )
 
-// length of mark pointer stack
-const (
-	STACK_LENGTH  = 65536
-	BUFFER_LENGTH = 65536
-)
-
 type Rule func(s *Scanner) []rune
-
 
 // reading Scanner
 type Scanner struct {
@@ -30,25 +23,34 @@ type Scanner struct {
 }
 
 // Create new reading Scanner
-func NewScanner(r io.RuneReader, t *Tree) *Scanner {
+func NewScanner(r io.RuneReader, t *Tree, blen, slen int) *Scanner {
 	s := Scanner{}
-	s.b = make([]rune, 0, BUFFER_LENGTH)
+	s.b = make([]rune, 0, blen)
 	s.r = r
-	s.rp = make([]int, 1, STACK_LENGTH)
-	s.rp[0] = 0
+	s.rp = make([]int, 0, slen)
 	s.wp = t
 	s.pp = 0
 
 	return &s
 }
 
-func StringScanner(b string, k int) (s *Scanner, t *Tree) {
-	t = &Tree{k, []rune(b), nil, nil}
-	s = NewScanner(bytes.NewReader([]byte(b)), t)
+func StringScanner(b string) (s *Scanner, t *Tree) {
+	t = &Tree{-1, []rune(b), nil, nil}
+	s = NewScanner(bytes.NewReader([]byte(b)), t, len(b), len(b))
 	return
 }
 
-// add mark pointer
+// Pars string value by Rule
+func ParseString(b string, f Rule) *Tree {
+	t = &Tree{-1, []rune(b), nil, nil}
+	s = NewScanner(bytes.NewReader([]byte(b)), t, len(b), len(b))
+	if f(s) != nil {
+		return t
+	}
+	return nil
+}
+
+// set marker
 func (s *Scanner) mark() {
 	// push marker to read stack
     s.rp = append(s.rp, s.pp)
@@ -57,7 +59,6 @@ func (s *Scanner) mark() {
 // commit
 func (s *Scanner) commit() []rune {
 	// delete marker from read stack, and get buffer value
-	// println("commit()=" + string(s.b[s.rp[s.st]: s.pp]))
 	ret := s.b[s.rp[len(s.rp) - 1]: s.pp]
     s.rp = s.rp[0: len(s.rp) - 1]
     
@@ -67,7 +68,6 @@ func (s *Scanner) commit() []rune {
 // rollback
 func (s *Scanner) rollback() []rune {
 	// pop marker from red stack
-	// println("rollback()=" + string(s.b[s.rp[s.st]: s.pp]))
 	s.pp = s.rp[len(s.rp) - 1]
     s.rp = s.rp[0: len(s.rp) - 1]
     
@@ -87,7 +87,6 @@ func (s *Scanner) next() []rune {
 		// append to Scanner
 		s.b = append(s.b, ch)
 	}
-	// println("next()=" + string(s.b[s.pp: s.pp + 1]))
 	return s.b[s.pp: s.pp + 1]
 }
 
