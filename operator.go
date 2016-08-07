@@ -6,13 +6,13 @@ import "strings"
 // match -> []rune of match value
 // different or EOF -> nil
 
-// V:   Match single character
+// V(c rune) Match single character
 func V(c rune) Rule {
 	return func(s *scanner) []rune {
 		if ch := s.next(); ch != nil && ch[0] == c {
-            s.pp++
-            return ch
-        }
+			s.pp++
+			return ch
+		}
 		return nil
 	}
 }
@@ -38,41 +38,41 @@ func VL(cl ...rune) Rule {
 
 // VI:  Match single string (case insensitive)
 func VI(s string) Rule {
-    s = strings.ToLower(s)
-    r := make([]Rule, len(s))
+	s = strings.ToLower(s)
+	r := make([]Rule, len(s))
 	for i, ch1 := range s {
-        ch2 := ch1
-        if ch2 >= 0x61 && ch2 <= 0x7a {
-            ch2 -= 0x20
-        }
+		ch2 := ch1
+		if ch2 >= 0x61 && ch2 <= 0x7a {
+			ch2 -= 0x20
+		}
 		r[i] = VL(ch1, ch2)
 	}
-    return C(r...)
+	return C(r...)
 }
 
 // VIL: Alternatives of multiple strings (case insensitive)
 func VIL(sl ...string) Rule {
-    r := make([]Rule, len(sl))
+	r := make([]Rule, len(sl))
 	for i, s := range sl {
-        r[i] = VI(s)
+		r[i] = VI(s)
 	}
 	return A(r...)
 }
 
 // VS:  Match single string (case sensitive)
 func VS(s string) Rule {
-    r := make([]Rule, len(s))
+	r := make([]Rule, len(s))
 	for i, ch := range s {
 		r[i] = V(ch)
 	}
-    return C(r...)
+	return C(r...)
 }
 
 // VSL: Alternatives of multiple strings (case sensitive)
 func VSL(sl ...string) Rule {
-    r := make([]Rule, len(sl))
+	r := make([]Rule, len(sl))
 	for i, s := range sl {
-        r[i] = VS(s)
+		r[i] = VS(s)
 	}
 	return A(r...)
 }
@@ -183,8 +183,6 @@ func O(r Rule) Rule {
 	}
 }
 
-
-
 /*
    Additional operator
 */
@@ -194,11 +192,11 @@ func O(r Rule) Rule {
 // different or EOF -> empty []rune
 func N(r Rule) Rule {
 	return func(s *scanner) []rune {
-        b := make([]rune, 0)
+		b := make([]rune, 0)
 		s.mark()
 		if r(s) != nil {
-            b = nil
-        }
+			b = nil
+		}
 		s.rollback()
 		return b
 	}
@@ -207,16 +205,15 @@ func N(r Rule) Rule {
 // Add new tree node with key k
 func K(r Rule, k int) Rule {
 	return func(s *scanner) []rune {
-        p := s.wp
-        s.wp = &Tree{k, nil, nil, nil}
-        
-        v := r(s)
+		p := s.wp
+		s.wp = &Tree{k, nil, nil, nil}
+
+		v := r(s)
 		if v != nil {
-            s.wp.V = v
-            p.add(s.wp)
-        }
-        s.wp = p
-    	return v
+			s.wp.V = v
+			p.add(s.wp)
+		}
+		s.wp = p
+		return v
 	}
 }
-
