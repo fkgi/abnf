@@ -6,7 +6,7 @@ import "strings"
 // match -> []rune of match value
 // different or EOF -> nil
 
-// V(c rune) Match single character
+// V match single character
 func V(c rune) Rule {
 	return func(s *scanner) []rune {
 		if ch := s.next(); ch != nil && ch[0] == c {
@@ -17,7 +17,7 @@ func V(c rune) Rule {
 	}
 }
 
-// VL:  Alternatives of multiple characters
+// VL match multiple characters
 func VL(cl ...rune) Rule {
 	return func(s *scanner) []rune {
 		ch := s.next()
@@ -36,7 +36,7 @@ func VL(cl ...rune) Rule {
 	}
 }
 
-// VI:  Match single string (case insensitive)
+// VI match single string (case insensitive)
 func VI(s string) Rule {
 	s = strings.ToLower(s)
 	r := make([]Rule, len(s))
@@ -50,7 +50,7 @@ func VI(s string) Rule {
 	return C(r...)
 }
 
-// VIL: Alternatives of multiple strings (case insensitive)
+// VIL match multiple strings (case insensitive)
 func VIL(sl ...string) Rule {
 	r := make([]Rule, len(sl))
 	for i, s := range sl {
@@ -59,7 +59,7 @@ func VIL(sl ...string) Rule {
 	return A(r...)
 }
 
-// VS:  Match single string (case sensitive)
+// VS match single string (case sensitive)
 func VS(s string) Rule {
 	r := make([]Rule, len(s))
 	for i, ch := range s {
@@ -68,7 +68,7 @@ func VS(s string) Rule {
 	return C(r...)
 }
 
-// VSL: Alternatives of multiple strings (case sensitive)
+// VSL match multiple strings (case sensitive)
 func VSL(sl ...string) Rule {
 	r := make([]Rule, len(sl))
 	for i, s := range sl {
@@ -77,7 +77,7 @@ func VSL(sl ...string) Rule {
 	return A(r...)
 }
 
-// Concatenation:  Rule1 Rule2
+// C is Concatenation(Rule1 Rule2)
 // match -> []rune of match value
 // different or EOF -> nil
 func C(r ...Rule) Rule {
@@ -92,7 +92,7 @@ func C(r ...Rule) Rule {
 	}
 }
 
-// Alternatives:  Rule1 / Rule2
+// A is Alternatives(Rule1 / Rule2)
 // Incremental Alternatives: Rule1 =/ Rule2
 // different or EOF -> nil
 func A(r ...Rule) Rule {
@@ -106,7 +106,7 @@ func A(r ...Rule) Rule {
 	}
 }
 
-// Value Range Alternatives:  %c##-##
+// VR is Value Range Alternatives(%c##-##)
 // match -> []rune of match value
 // different or EOF -> nil
 func VR(h rune, t rune) Rule {
@@ -119,7 +119,7 @@ func VR(h rune, t rune) Rule {
 	}
 }
 
-// Specific Repetition:  nRule
+// RN is Specific Repetition(nRule)
 // match -> []rune of match value
 // different or EOF -> nil
 func RN(n int, r Rule) Rule {
@@ -128,7 +128,7 @@ func RN(n int, r Rule) Rule {
 	}
 }
 
-// Variable Repetition:  *Rule
+// RV is Variable Repetition(*Rule)
 // match -> []rune of match value
 // different or EOF -> nil
 // If max=-1 then max=infinity.
@@ -138,7 +138,7 @@ func RV(min int, max int, r Rule) Rule {
 	}
 }
 
-// Default repeat count of Variable Repetition
+// R0 is default repeat count of Variable Repetition
 // From zero to infinity
 func R0(r Rule) Rule {
 	return func(s *scanner) []rune {
@@ -146,7 +146,7 @@ func R0(r Rule) Rule {
 	}
 }
 
-// More than one repeat count of Variable Repetition
+// R1 is more than one repeat count of Variable Repetition
 // From one to infinity
 func R1(r Rule) Rule {
 	return func(s *scanner) []rune {
@@ -170,7 +170,7 @@ func repet(s *scanner, min int, max int, r Rule) []rune {
 	return s.commit()
 }
 
-// Optional Sequence:  [RULE]
+// O is Optional Sequence([RULE])
 // match -> []rune of match value
 // different or EOF -> empty []rune
 func O(r Rule) Rule {
@@ -187,7 +187,7 @@ func O(r Rule) Rule {
    Additional operator
 */
 
-// Not match
+// N is Not match
 // match -> nil
 // different or EOF -> empty []rune
 func N(r Rule) Rule {
@@ -202,7 +202,7 @@ func N(r Rule) Rule {
 	}
 }
 
-// Add new tree node with key k
+// K add new tree node with key k
 func K(r Rule, k int) Rule {
 	return func(s *scanner) []rune {
 		p := s.wp
