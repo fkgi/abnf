@@ -192,7 +192,7 @@ func O(r Rule) Rule {
 // different or EOF -> empty []rune
 func N(r Rule) Rule {
 	return func(s *scanner) []rune {
-		b := make([]rune, 0)
+		var b []rune
 		s.mark()
 		if r(s) != nil {
 			b = nil

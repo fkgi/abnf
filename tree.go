@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-// key value tree
+// Tree is tree structure that contains pair of key and value
 type Tree struct {
 	K       int
 	V       []rune
@@ -13,7 +13,7 @@ type Tree struct {
 	brother *Tree
 }
 
-// return all children
+// AllChildren return all children
 func (t *Tree) AllChildren() (ret []*Tree) {
 	for c := t.child; c != nil; c = c.brother {
 		ret = append(ret, c)
@@ -21,7 +21,7 @@ func (t *Tree) AllChildren() (ret []*Tree) {
 	return
 }
 
-// return first child that Key = k
+// Child return first child that Key = k
 func (t *Tree) Child(k int) *Tree {
 	for c := t.child; c != nil; c = c.brother {
 		if c.K == k {
@@ -31,7 +31,7 @@ func (t *Tree) Child(k int) *Tree {
 	return nil
 }
 
-// return children that Key = k
+// Children return children that Key = k
 func (t *Tree) Children(k int) (ret []*Tree) {
 	for c := t.child; c != nil; c = c.brother {
 		if c.K == k {
@@ -41,24 +41,25 @@ func (t *Tree) Children(k int) (ret []*Tree) {
 	return
 }
 
+// HasChild return the tree have child or not
 func (t *Tree) HasChild() bool {
 	return t.child != nil
 }
 
 // add t to p as child
-func (p *Tree) add(t *Tree) {
-	if ch := p.child; ch == nil {
-		p.child = t
+func (t *Tree) add(c *Tree) {
+	if ch := t.child; ch == nil {
+		t.child = c
 	} else {
-        for ch.brother != nil {
-            ch = ch.brother
-        }
-        ch.brother = t
-    }
+		for ch.brother != nil {
+			ch = ch.brother
+		}
+		ch.brother = c
+	}
 	return
 }
 
-// print stack trace
+// GetStack print stack trace
 func (t Tree) GetStack() string {
 	return t.getStackSub(0)
 }

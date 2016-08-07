@@ -5,6 +5,7 @@ import (
 	"io"
 )
 
+// Rule is rule function of ABNF
 type Rule func(s *scanner) []rune
 
 // reading scanner
@@ -22,13 +23,12 @@ type scanner struct {
 	pp int
 }
 
-
-// Pars string value by Rule
+// ParseString parse string value by Rule
 func ParseString(b string, f Rule) *Tree {
-    return ParseReader(bytes.NewReader([]byte(b)), len(b), len(b), f)
+	return ParseReader(bytes.NewReader([]byte(b)), len(b), len(b), f)
 }
 
-// Pars reader value by Rule
+// ParseReader parse reader value by Rule
 func ParseReader(r io.RuneReader, blen, slen int, f Rule) *Tree {
 	s := scanner{}
 	s.b = make([]rune, 0, blen)
@@ -36,36 +36,35 @@ func ParseReader(r io.RuneReader, blen, slen int, f Rule) *Tree {
 	s.rp = make([]int, 0, slen)
 	s.wp = &Tree{-1, nil, nil, nil}
 	s.pp = 0
-    
+
 	if v := f(&s); v != nil {
-        s.wp.V = v
+		s.wp.V = v
 		return s.wp
 	}
 	return nil
 }
 
-
 // set marker
 func (s *scanner) mark() {
 	// push marker to read stack
-    s.rp = append(s.rp, s.pp)
+	s.rp = append(s.rp, s.pp)
 }
 
 // commit
 func (s *scanner) commit() []rune {
 	// delete marker from read stack, and get buffer value
-	ret := s.b[s.rp[len(s.rp) - 1]: s.pp]
-    s.rp = s.rp[0: len(s.rp) - 1]
-    
+	ret := s.b[s.rp[len(s.rp)-1]:s.pp]
+	s.rp = s.rp[0 : len(s.rp)-1]
+
 	return ret
 }
 
 // rollback
 func (s *scanner) rollback() []rune {
 	// pop marker from red stack
-	s.pp = s.rp[len(s.rp) - 1]
-    s.rp = s.rp[0: len(s.rp) - 1]
-    
+	s.pp = s.rp[len(s.rp)-1]
+	s.rp = s.rp[0 : len(s.rp)-1]
+
 	return nil
 }
 
@@ -82,7 +81,5 @@ func (s *scanner) next() []rune {
 		// append to scanner
 		s.b = append(s.b, ch)
 	}
-	return s.b[s.pp: s.pp + 1]
+	return s.b[s.pp : s.pp+1]
 }
-
-
