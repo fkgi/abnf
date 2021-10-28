@@ -4,7 +4,7 @@ import "strings"
 
 // Terminal Values
 // match -> []rune of match value
-// different or EOF -> nil
+// different or ETX -> nil
 
 // V match single character
 func V(c rune) Rule {
@@ -79,7 +79,7 @@ func VSL(sl ...string) Rule {
 
 // C is Concatenation(Rule1 Rule2)
 // match -> []rune of match value
-// different or EOF -> nil
+// different or ETX -> nil
 func C(r ...Rule) Rule {
 	return func(s *scanner) []rune {
 		s.mark()
@@ -94,7 +94,7 @@ func C(r ...Rule) Rule {
 
 // A is Alternatives(Rule1 / Rule2)
 // Incremental Alternatives: Rule1 =/ Rule2
-// different or EOF -> nil
+// different or ETX -> nil
 func A(r ...Rule) Rule {
 	return func(s *scanner) []rune {
 		for _, f := range r {
@@ -108,7 +108,7 @@ func A(r ...Rule) Rule {
 
 // VR is Value Range Alternatives(%c##-##)
 // match -> []rune of match value
-// different or EOF -> nil
+// different or ETX -> nil
 func VR(h rune, t rune) Rule {
 	return func(s *scanner) []rune {
 		if ch := s.next(); ch != nil && ch[0] >= h && ch[0] <= t {
@@ -121,7 +121,7 @@ func VR(h rune, t rune) Rule {
 
 // RN is Specific Repetition(nRule)
 // match -> []rune of match value
-// different or EOF -> nil
+// different or ETX -> nil
 func RN(n int, r Rule) Rule {
 	return func(s *scanner) []rune {
 		return repet(s, n, n, r)
@@ -130,7 +130,7 @@ func RN(n int, r Rule) Rule {
 
 // RV is Variable Repetition(*Rule)
 // match -> []rune of match value
-// different or EOF -> nil
+// different or ETX -> nil
 // If max=-1 then max=infinity.
 func RV(min int, max int, r Rule) Rule {
 	return func(s *scanner) []rune {
@@ -172,7 +172,7 @@ func repet(s *scanner, min int, max int, r Rule) []rune {
 
 // O is Optional Sequence([RULE])
 // match -> []rune of match value
-// different or EOF -> empty []rune
+// different or ETX -> empty []rune
 func O(r Rule) Rule {
 	return func(s *scanner) []rune {
 		b := r(s)
@@ -189,7 +189,7 @@ func O(r Rule) Rule {
 
 // N is Not match
 // match -> nil
-// different or EOF -> empty []rune
+// different or ETX -> empty []rune
 func N(r Rule) Rule {
 	return func(s *scanner) []rune {
 		var b []rune

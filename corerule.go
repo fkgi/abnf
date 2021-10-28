@@ -94,13 +94,12 @@ func ALPHANUM() Rule {
 	return A(DIGIT(), ALPHA())
 }
 
-
 /*
    Additional rules
 */
 
-// EOF = [EOF]
-func EOF() Rule {
+// ETX = [End of Text]
+func ETX() Rule {
 	return func(s *scanner) []rune {
 		if s.next() == nil {
 			return make([]rune, 0)
